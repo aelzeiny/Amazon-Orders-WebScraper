@@ -19,7 +19,7 @@ python main.py -c './chromedriver' -o './receipts'
 ```
 
 ### Why?
-* The wonderful minds behind the **AWS CLOUD** cannot provide an OAuth API :/
+* The wonderful minds behind the **AWS CLOUD** cannot provide an OAuth API 🙃
 * Amazon is mostly server-side generated, and AFAIK there's no direct API call that can grab these details.
 * Amazon killed the "download orders as CSV" feature.
 
