@@ -54,6 +54,11 @@ def scrape_amazon_orders(
     chrome_driver_path: str,
     order_receipts_path: str,
 ):
+    if not chrome_driver_path:
+        logging.info("Downloading ChromeDriver if not available")
+        import chromedriver_autoinstaller
+        chrome_driver_path = chromedriver_autoinstaller.install()
+
     options = webdriver.ChromeOptions()
     service = Service(executable_path=chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
@@ -117,7 +122,8 @@ if __name__ == "__main__":
         "-c",
         "--chrome_driver_path",
         type=str,
-        help="Path to the Chrome WebDriver executable",
+        help="(Optional) Path to the Chrome WebDriver executable.",
+        default=''
     )
     parser.add_argument(
         "-o",

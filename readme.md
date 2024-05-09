@@ -9,13 +9,13 @@ This repo scraps your Amazon Order Summary page with a headless browser, and dow
 
 ### Example Usage:
 ```
-python main.py -e 'user@email.com' -p 'hunter2' -t 'your_52_digit_totp_secret' -c './chromedriver' -o './receipts'
+python main.py -e 'user@email.com' -p 'hunter2' -t 'your_52_digit_totp_secret' -o './receipts'
 ```
 
 Or, set the environmental variables `AP_EMAIL`, `AP_PASSWORD`, and `AP_TOTP` for email, password, and totp secret respectively.
 
 ```
-python main.py -c './chromedriver' -o './receipts'
+python main.py -o './receipts'
 ```
 
 ### Why?

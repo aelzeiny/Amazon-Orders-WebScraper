@@ -1,3 +1,4 @@
 selenium
 pyotp
 tqdm
+chromedriver_autoinstaller
