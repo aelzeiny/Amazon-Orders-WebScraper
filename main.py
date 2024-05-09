@@ -53,6 +53,7 @@ def scrape_amazon_orders(
     totp: str,
     chrome_driver_path: str,
     order_receipts_path: str,
+    headless: bool,
 ):
     if not chrome_driver_path:
         logging.info("Downloading ChromeDriver if not available")
@@ -60,6 +61,8 @@ def scrape_amazon_orders(
         chrome_driver_path = chromedriver_autoinstaller.install()
 
     options = webdriver.ChromeOptions()
+    if headless:
+        options.add_argument("--headless=new")
     service = Service(executable_path=chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
 
@@ -130,5 +133,12 @@ if __name__ == "__main__":
         "--order_receipts_path",
         type=str,
         help="Path to the directory containing order receipts",
+    )
+    parser.add_argument(
+        "-head",
+        "--headless",
+        type=bool,
+        help="Headless ChromeDriver",
+        default=True,
     )
     scrape_amazon_orders(**dict(vars(parser.parse_args())))

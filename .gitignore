@@ -1,3 +1,4 @@
 env
 receipts
 chromedriver
+__pycache__
