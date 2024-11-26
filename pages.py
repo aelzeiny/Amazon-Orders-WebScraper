@@ -42,7 +42,6 @@ class PrimeOTPPage(PageObject):
         totp_gen = pyotp.TOTP(otp_secret)
 
         old_url = self.driver.current_url
-        self.otp_input.send_keys(totp_gen.now())
         self.signin_btn.click()
         WebDriverWait(self.driver, 10).until(lambda driver: driver.current_url != old_url)
 
