@@ -75,7 +75,10 @@ class PrimeLoginEmailPage(PageObject):
 
     @property
     def email_input(self):
-        return self.driver.find_element(By.ID, "ap_email")
+        try:
+            return self.driver.find_element(By.ID, "ap_email")
+        except:
+            return self.driver.find_element(By.ID, "ap_email_login")
 
     @property
     def continue_btn(self):
