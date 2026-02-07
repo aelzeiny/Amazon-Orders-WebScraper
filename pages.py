@@ -119,7 +119,7 @@ class OrdersSummaryPage(PageObject):
         return self.driver.find_element(By.CSS_SELECTOR, 'ul.a-pagination .a-last a')
 
     def _get_order_links(self):
-        return self.driver.find_elements(By.CSS_SELECTOR, '[href*="gp/css/order-details"], [href*="/gp/your-account/order-details"]')
+        return self.driver.find_elements(By.CSS_SELECTOR, '[href*="/your-orders/order-details"], [href*="/gp/your-account/order-details"]')
 
     def get_order_ids(self) -> list[OrderLink]:
         return list(set([
