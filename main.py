@@ -71,6 +71,19 @@ def scrape_amazon_orders(
         options.add_argument("--disable-gpu")
     service = Service(executable_path=chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
+    driver.execute_cdp_cmd("WebAuthn.enable", {})
+    driver.execute_cdp_cmd(
+        "WebAuthn.addVirtualAuthenticator",
+        {
+            "options": {
+                "protocol": "ctap2",
+                "transport": "internal",
+                "hasResidentKey": False,
+                "hasUserVerification": False,
+                "isUserVerified": False,
+            }
+        },
+    )
 
     signin(driver, email, password, totp)
 
