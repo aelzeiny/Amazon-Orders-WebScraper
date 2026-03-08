@@ -2,7 +2,7 @@ import os
 import logging
 import argparse
 import tqdm
-
+from dotenv import load_dotenv
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,6 +15,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 
 import pages
+
+
+load_dotenv()
 
 
 def signin(driver, email, password, totp):
@@ -63,6 +66,9 @@ def scrape_amazon_orders(
     options = webdriver.ChromeOptions()
     if headless:
         options.add_argument("--headless=new")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
     service = Service(executable_path=chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
     driver.execute_cdp_cmd("WebAuthn.enable", {})

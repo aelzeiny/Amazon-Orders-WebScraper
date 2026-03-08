@@ -1,0 +1,15 @@
+[project]
+name = "amazon-orders-webscraper"
+version = "0.1.0"
+description = "Scrapes Amazon order summary pages and downloads receipts using a headless browser."
+requires-python = ">=3.10"
+dependencies = [
+    "selenium",
+    "pyotp",
+    "tqdm",
+    "chromedriver-autoinstaller",
+    "python-dotenv",
+]
+
+[project.scripts]
+amazon-orders = "main:scrape_amazon_orders"
