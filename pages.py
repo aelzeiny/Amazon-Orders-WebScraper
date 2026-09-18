@@ -18,7 +18,7 @@ class PageObject(ABC):
     def did_load(self):
         pass
 
-    def load(self, timeout=10):
+    def load(self, timeout=30):
         WebDriverWait(self.driver, timeout).until(lambda _: self.did_load())
 
 
@@ -56,8 +56,16 @@ class PrimeLoginPasswordPage(PageObject):
     def signin_btn(self):
         return self.driver.find_element(By.ID, "signInSubmit")
 
+    @property
+    def remember_me(self):
+        return self.driver.find_element(By.NAME, "rememberMe")
+
     def password(self, password: str) -> PrimeOTPPage:
         self.password_input.send_keys(password)
+        try:
+            self.remember_me.click()   # "Keep me signed in": a long-lived session
+        except Exception:
+            pass
         self.signin_btn.click()
         return PrimeOTPPage(self.driver)
     
