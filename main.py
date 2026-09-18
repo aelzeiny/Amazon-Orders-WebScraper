@@ -13,6 +13,7 @@ logging.basicConfig(
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.common.exceptions import TimeoutException
 
 import pages
 
@@ -28,11 +29,25 @@ def signin(driver, email, password, totp):
     if not totp:
         totp = os.environ["AP_TOTP"]
 
+    try:                                      # a persisted profile (AP_PROFILE_DIR) may still hold a live session
+        pages.OrdersSummaryPage(driver).load(timeout=10)
+        logging.info("Already signed in")
+        return
+    except TimeoutException:
+        pass
+
     logging.info("Loading email")
     email_page = pages.PrimeLoginEmailPage(driver)
-    email_page.load()
-    logging.info("Setting password")
-    password_page = email_page.username(email)
+    password_page = pages.PrimeLoginPasswordPage(driver)
+    try:
+        email_page.load()
+    except TimeoutException:
+        if not password_page.did_load():
+            raise
+        logging.info("Email remembered")      # a known device: Amazon skips the email step
+    else:
+        logging.info("Setting password")
+        password_page = email_page.username(email)
     password_page.load()
     otp_page = password_page.password(password)
 
@@ -64,10 +79,21 @@ def scrape_amazon_orders(
         chrome_driver_path = chromedriver_autoinstaller.install()
 
     options = webdriver.ChromeOptions()
+    options.add_argument("--disable-blink-features=AutomationControlled")   # navigator.webdriver stays false
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option("useAutomationExtension", False)
+    if profile := os.environ.get("AP_PROFILE_DIR"):  # cookies persist between runs: a known, signed-in device
+        os.makedirs(profile, exist_ok=True)
+        for stale in ("SingletonLock", "SingletonSocket", "SingletonCookie"):   # left by a killed browser
+            try:
+                os.remove(os.path.join(profile, stale))
+            except OSError:
+                pass
+        options.add_argument(f"--user-data-dir={profile}")
+    options.add_argument("--no-sandbox")            # a container has no usable sandbox, headed (under Xvfb) or not
+    options.add_argument("--disable-dev-shm-usage")
     if headless:
         options.add_argument("--headless=new")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--disable-gpu")
     service = Service(executable_path=chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
@@ -87,6 +113,7 @@ def scrape_amazon_orders(
 
     signin(driver, email, password, totp)
 
+    os.makedirs(order_receipts_path, exist_ok=True)
     orders_page = pages.OrdersSummaryPage(driver)
     orders_page.load()
     recent_orders = []
@@ -156,7 +183,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-head",
         "--headless",
-        type=bool,
+        type=lambda v: v.lower() not in ("0", "false", "no"),   # argparse's type=bool makes "false" True
         help="Headless ChromeDriver",
         default=True,
     )

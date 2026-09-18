@@ -4,3 +4,4 @@ chromedriver
 __pycache__
 .env
 .venv
+data
